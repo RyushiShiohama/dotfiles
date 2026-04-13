@@ -1,0 +1,12 @@
+# OS
+.DS_Store
+
+# Secrets - never commit these
+*.pem
+*.key
+*_rsa
+*_rsa.pub
+.env
+.env.*
+credentials.json
+.netrc
