@@ -26,7 +26,23 @@ echo "==> Installing packages from Brewfile..."
 brew bundle --file="$DOTFILES_DIR/Brewfile"
 
 # ============================================================
-#  3. Symlinks
+#  3. macOS defaults
+# ============================================================
+echo "==> Applying macOS system preferences..."
+# Dock
+defaults write com.apple.dock autohide -bool true
+defaults write com.apple.dock tilesize -int 63
+# Keyboard
+defaults write NSGlobalDomain KeyRepeat -int 2
+defaults write NSGlobalDomain InitialKeyRepeat -int 25
+# Trackpad: tap to click
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 1.5
+# Apply Dock changes
+killall Dock 2>/dev/null || true
+
+# ============================================================
+#  4. Symlinks
 # ============================================================
 echo "==> Creating symlinks..."
 
@@ -40,6 +56,8 @@ link() {
   echo "   linked: $src -> $dst"
 }
 
+mkdir -p "$HOME/.hammerspoon"
+
 link "$DOTFILES_DIR/zsh/.zshrc"           "$HOME/.zshrc"
 link "$DOTFILES_DIR/tmux/.tmux.conf"      "$HOME/.tmux.conf"
 link "$DOTFILES_DIR/vim/.vimrc"           "$HOME/.vimrc"
@@ -47,7 +65,7 @@ link "$DOTFILES_DIR/git/.gitconfig"       "$HOME/.gitconfig"
 link "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
 
 # ============================================================
-#  4. vim-plug & plugins
+#  5. vim-plug & plugins
 # ============================================================
 if [[ ! -f "$HOME/.vim/autoload/plug.vim" ]]; then
   echo "==> Installing vim-plug..."
@@ -58,7 +76,7 @@ echo "==> Installing vim plugins..."
 vim +PlugInstall +qall 2>/dev/null || true
 
 # ============================================================
-#  5. Hammerspoon ShiftIt Spoon
+#  6. Hammerspoon ShiftIt Spoon
 # ============================================================
 SPOONS_DIR="$HOME/.hammerspoon/Spoons"
 if [[ ! -d "$SPOONS_DIR/ShiftIt.spoon" ]]; then
@@ -73,14 +91,20 @@ else
 fi
 
 # ============================================================
-#  6. Create .hammerspoon dir if needed
+#  7. npm global packages
 # ============================================================
-mkdir -p "$HOME/.hammerspoon"
+echo "==> Installing global npm packages..."
+npm install -g @anthropic-ai/claude-code
 
 echo ""
-echo "==> Done! Restart your terminal or run: source ~/.zshrc"
+echo "=========================================="
+echo "  Setup complete!"
+echo "=========================================="
 echo ""
-echo "==> Manual steps remaining:"
-echo "   - SSH keys: copy or generate ~/.ssh/github_rsa etc."
-echo "   - gh auth login"
-echo "   - Docker Desktop: open from Applications to complete setup"
+echo "Restart your terminal or run: source ~/.zshrc"
+echo ""
+echo "Manual steps remaining:"
+echo "  1. SSH keys: AirDrop or USB from old Mac -> ~/.ssh/"
+echo "  2. AWS credentials: AirDrop or USB -> ~/.aws/"
+echo "  3. gh auth login"
+echo "  4. Docker Desktop: open from Applications to complete setup"

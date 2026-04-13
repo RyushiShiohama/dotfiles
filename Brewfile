@@ -2,6 +2,7 @@
 
 # ===== formulae =====
 brew "gh"
+brew "mas"
 brew "node"
 brew "ripgrep"
 brew "tig"
